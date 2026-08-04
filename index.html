@@ -20,8 +20,7 @@
 
         html, body {
             font-family: 'Quicksand', sans-serif;
-            overflow-x: hidden;
-            scroll-behavior: smooth;
+            overflow: hidden; /* Hide the main body scrollbar to use our custom container */
             
             /* Upgraded Dynamic Gradient Background */
             background: linear-gradient(45deg, #ff9a9e, #fecfef, #a1c4fd, #c2e9fb);
@@ -36,7 +35,25 @@
             100% { background-position: 0% 50%; }
         }
 
-        /* Upgraded Floating Magic Orbs (Fireflies) */
+        /* PREMIUM SCROLL CONTAINER */
+        .scroll-container {
+            height: 100vh;
+            height: 100dvh; /* Fixes mobile browser UI bar jump */
+            width: 100vw;
+            overflow-y: scroll;
+            
+            /* THIS CREATES THE "ZIGGLE" AND PREMIUM SNAP FEEL */
+            scroll-snap-type: y mandatory;
+            scroll-behavior: smooth;
+            
+            /* Hide scrollbar for a clean app feel */
+            scrollbar-width: none; 
+        }
+        .scroll-container::-webkit-scrollbar { 
+            display: none; 
+        }
+
+        /* Floating Magic Orbs (Fireflies) */
         #magic-container {
             position: fixed;
             top: 0;
@@ -65,14 +82,19 @@
 
         /* Page Layout */
         .page {
-            min-height: 100vh;
+            height: 100vh;
+            height: 100dvh;
             width: 100vw;
             display: flex;
             justify-content: center;
             align-items: center;
             position: relative;
             z-index: 10;
-            padding: 60px 20px;
+            padding: 20px;
+            
+            /* Makes the page snap perfectly into place */
+            scroll-snap-align: center;
+            scroll-snap-stop: always; /* Prevents swiping past multiple pages at once */
         }
 
         /* Upgraded Glassmorphism Story Cards */
@@ -83,17 +105,56 @@
             border: 1px solid rgba(255, 255, 255, 0.6);
             border-radius: 24px;
             padding: 40px;
-            max-width: 700px; /* Increased max-width */
+            width: 100%;
+            max-width: 650px;
+            
+            /* THE FIX: Prevents text from bleeding out on small phones */
+            max-height: 85vh; 
+            overflow-y: auto; /* Allows scrolling INSIDE the card if text is too long */
+            scrollbar-width: none;
+            
             text-align: center;
             box-shadow: 0 10px 40px 0 rgba(31, 38, 135, 0.15);
-            transform: translateY(50px) scale(0.95);
+            transform: translateY(60px) scale(0.9);
             opacity: 0;
-            transition: all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            transition: all 0.8s cubic-bezier(0.34, 1.56, 0.64, 1); /* Bouncy premium intro */
         }
+        .card::-webkit-scrollbar { display: none; }
 
         .card.visible {
             transform: translateY(0) scale(1);
             opacity: 1;
+        }
+
+        /* Cover Page Specific Styles */
+        .cover-card {
+            background: rgba(255, 255, 255, 0.5);
+            border: 2px solid rgba(255, 255, 255, 0.8);
+            box-shadow: 0 15px 50px rgba(216, 27, 96, 0.2);
+        }
+
+        .cute-cake {
+            font-size: 5rem;
+            margin-bottom: 10px;
+            display: inline-block;
+            animation: floatCake 3s ease-in-out infinite;
+        }
+
+        @keyframes floatCake {
+            0%, 100% { transform: translateY(0) rotate(-5deg); }
+            50% { transform: translateY(-15px) rotate(5deg); }
+        }
+
+        .cover-title {
+            font-size: 4rem;
+            color: #d81b60;
+            margin-bottom: 10px;
+        }
+
+        .cover-subtitle {
+            font-size: 1.3rem;
+            color: #5e35b1;
+            font-weight: 700;
         }
 
         /* Typography */
@@ -130,40 +191,40 @@
             border-radius: 10px;
         }
 
-        /* Scroll Down Indicator */
-        .scroll-indicator {
-            position: absolute;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            animation: bounce 2s infinite;
+        /* Swipe Up Indicator */
+        .swipe-indicator {
+            margin-top: 30px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
             color: #d81b60;
-            font-size: 2.5rem;
-            pointer-events: none;
-            filter: drop-shadow(0px 2px 5px rgba(255,255,255,0.8));
+            font-weight: 700;
+            font-size: 1.2rem;
+            animation: pulseFade 2s infinite;
         }
 
-        @keyframes bounce {
-            0%, 20%, 50%, 80%, 100% { transform: translateY(0) translateX(-50%); }
-            40% { transform: translateY(-15px) translateX(-50%); }
-            60% { transform: translateY(-7px) translateX(-50%); }
+        .swipe-indicator span {
+            font-size: 2rem;
+            margin-top: 5px;
+        }
+
+        @keyframes pulseFade {
+            0%, 100% { transform: translateY(0); opacity: 0.5; }
+            50% { transform: translateY(-10px); opacity: 1; }
         }
 
         /* EXTREME MOBILE ADJUSTMENTS FOR FITTING */
         @media (max-width: 600px) {
-            h1 { font-size: 2.2rem; margin-bottom: 12px; }
-            h2 { font-size: 2rem; margin-bottom: 12px; }
-            p { font-size: 0.95rem; line-height: 1.4; margin-bottom: 12px; }
+            h1 { font-size: 2.5rem; margin-bottom: 12px; }
+            h2 { font-size: 2.2rem; margin-bottom: 12px; }
+            p { font-size: 1rem; line-height: 1.4; margin-bottom: 12px; }
             
-            /* Maximizing screen width */
-            .page { padding: 40px 10px; } 
             .card { 
-                padding: 20px 15px; 
-                width: 95%; /* Makes it as wide as possible */
-                max-width: none; 
-                border-radius: 18px;
+                padding: 25px 15px; 
+                width: 92%; 
+                border-radius: 20px;
             }
-            .scroll-indicator { bottom: 10px; font-size: 2rem; }
+            .cover-title { font-size: 3.2rem; }
         }
     </style>
 </head>
@@ -172,113 +233,132 @@
     <!-- Floating Background Effect -->
     <div id="magic-container"></div>
 
-    <!-- CHAPTER 1 (PART 1) -->
-    <section class="page">
-        <div class="card">
-            <h1>Chapter 1: Badminton Buddies 🏸</h1>
-            <p>It all started with, <span class="quote">"Tuhnu ki lagda mai shuru toh langdaa?"</span> 😂</p>
-            <p>And the classic, <span class="quote">"Koi racket nhi dera mujhe Silassss!!"</span> 😭😭😭</p>
-            <p>From shouting *"Ek re, dvaara dvaara!"* 🫢 to realizing *"honesty is the best policy"* 😗... we've come so far. Do you know how? Because of that one slap you got! 🥺</p>
-            <p>But I still stand by it—<span class="highlight">glti se hogya tha!</span> 😭🫠 Actually, it was for the best; the real entity was finally revealed! 😗</p>
-        </div>
-        <div class="scroll-indicator">⏬</div>
-    </section>
+    <!-- MAIN SCROLL CONTAINER FOR THE "SNAP" FEEL -->
+    <div class="scroll-container">
 
-    <!-- CHAPTER 1 (PART 2) -->
-    <section class="page">
-        <div class="card">
-            <h2>Chapter 1 (Part 2) 🏸</h2>
-            <p>It was all about magic moments, racket fights, and slowly... tea fights! 😂 We had zero tiredness and endless enthusiasm for the court.</p>
-            <p><em>Acha, fir aage kya hua? Badminton khtm toh sb khtm? Nhiii toh... aage ye hua! 👇</em></p>
-        </div>
-        <div class="scroll-indicator">⏬</div>
-    </section>
+        <!-- NEW COVER PAGE (Chapter 0) -->
+        <section class="page">
+            <div class="card cover-card">
+                <div class="cute-cake">🎂</div>
+                <h1 class="cover-title">Happy B'day!!</h1>
+                <p class="cover-subtitle">Ready for a little trip down memory lane? 😉✨</p>
+                
+                <div class="swipe-indicator">
+                    Swipe Up to Start
+                    <span>⏫</span>
+                </div>
+            </div>
+        </section>
 
-    <!-- CHAPTER 2 -->
-    <section class="page">
-        <div class="card">
-            <h2>Chapter 2: Complex Diaries ☕</h2>
-            <p><span class="highlight">Khatta = Silas di hoodie!</span></p>
-            <p>To be honest, our world revolved around CHAII, CHAII, CHAII back then... and now it's BEER, BEER, BEER! 😂 How times change.</p>
-            <p>From *"Mai chaii ni peeti"* to literally finishing almost everyone else's chai. <br>
-            <span class="quote">"Hello! Kaha ho? Shanti Nagar. Mai cllg hu... ok coming."</span> 👾</p>
-            <p>Mai 150rs te guzara krn wala... 😂 and now, the budget has definitely upgraded!</p>
-            <p><em>Bs college hi ghumna hai kya? Chlo fir kahin aur ghumte hai.</em> Where? The place where the chole bhature are incredibly lazeez! Still didn't get it? Chlo fir, leke chle... 🚆</p>
-        </div>
-        <div class="scroll-indicator">⏬</div>
-    </section>
+        <!-- CHAPTER 1 (PART 1) -->
+        <section class="page">
+            <div class="card">
+                <h1>Chapter 1: Badminton Buddies 🏸</h1>
+                <p>It all started with, <span class="quote">"Tuhnu ki lagda mai shuru toh langdaa?"</span> 😂</p>
+                <p>And the classic, <span class="quote">"Koi racket nhi dera mujhe Silassss!!"</span> 😭😭😭</p>
+                <p>From shouting *"Ek re, dvaara dvaara!"* 🫢 to realizing *"honesty is the best policy"* 😗... we've come so far. Do you know how? Because of that one slap you got! 🥺</p>
+                <p>But I still stand by it—<span class="highlight">glti se hogya tha!</span> 😭🫠 Actually, it was for the best; the real entity was finally revealed! 😗</p>
+                <div class="swipe-indicator" style="font-size: 0.9rem;">Swipe for more <span>⏬</span></div>
+            </div>
+        </section>
 
-    <!-- CHAPTER 3 -->
-    <section class="page">
-        <div class="card">
-            <h2>Chapter 3: Ethe ae v ho jnda 🤫</h2>
-            <p>Kaha aa gye hum? <span class="highlight">DIL WALON KI DILLI! 🫶🏻♥️</span></p>
-            <p>From saying, *"Mujhe toh Chandigarh jna hai, mai Delhi ja k mna krduga"* 😎 to realizing *"Delhi, Delhi haii yrr..."* ♥️</p>
-            <p>Kujh chahiye? THANKS! 🙏 Laser shows are normal, but have you ever seen the one at Qutub Minar? We just clicked photos there, and YOU... black black!! 😂😂</p>
-            <p>Then? Going to see the Taj Mahal and searching for Mumtaaz... not Shah Jahan's, but our own! 😂🤫</p>
-            <p>After falling for the dil wala shehr, we thought, let's just get exported here and become Delhiites... or should I say, Red Tape wale! 😂</p>
-        </div>
-        <div class="scroll-indicator">⏬</div>
-    </section>
+        <!-- CHAPTER 1 (PART 2) -->
+        <section class="page">
+            <div class="card">
+                <h2>Chapter 1 (Part 2) 🏸</h2>
+                <p>It was all about magic moments, racket fights, and slowly... tea fights! 😂 We had zero tiredness and endless enthusiasm for the court.</p>
+                <p><em>Acha, fir aage kya hua? Badminton khtm toh sb khtm? Nhiii toh... aage ye hua! 👇</em></p>
+                <div class="swipe-indicator" style="font-size: 0.9rem;"><span>⏬</span></div>
+            </div>
+        </section>
 
-    <!-- CHAPTER 4 -->
-    <section class="page">
-        <div class="card">
-            <h2>Chapter 4: The Separation Era 🚫</h2>
-            <p>Boss said: <span class="quote">"Navuu, tu na Silas nl ghtaa de."</span></p>
-            <p>But who is he to tell me what I'm gonna do? <span class="highlight">Mai toh aesthetic hu, jo mrji krugi! 😎</span></p>
-            <p>And then what? Our bond just grew stronger!</p>
-            <p>Exploring everything together, and of course, hunting down the absolute BEST Chole Bhature! 😭🫶🏻</p>
-        </div>
-        <div class="scroll-indicator">⏬</div>
-    </section>
+        <!-- CHAPTER 2 -->
+        <section class="page">
+            <div class="card">
+                <h2>Chapter 2: Complex Diaries ☕</h2>
+                <p><span class="highlight">Khatta = Silas di hoodie!</span></p>
+                <p>To be honest, our world revolved around CHAII, CHAII, CHAII back then... and now it's BEER, BEER, BEER! 😂 How times change.</p>
+                <p>From *"Mai chaii ni peeti"* to literally finishing almost everyone else's chai. <br>
+                <span class="quote">"Hello! Kaha ho? Shanti Nagar. Mai cllg hu... ok coming."</span> 👾</p>
+                <p>Mai 150rs te guzara krn wala... 😂 and now, the budget has definitely upgraded!</p>
+                <p><em>Bs college hi ghumna hai kya? Chlo fir kahin aur ghumte hai.</em> Where? The place where the chole bhature are incredibly lazeez! Still didn't get it? Chlo fir, leke chle... 🚆</p>
+                <div class="swipe-indicator" style="font-size: 0.9rem;"><span>⏬</span></div>
+            </div>
+        </section>
 
-    <!-- CHAPTER 5 (PART 1) -->
-    <section class="page">
-        <div class="card">
-            <h2>Chapter 5: Exploring Delhi 🚇</h2>
-            <p>From *"Mai nii jnaa.. vo sb honge udr"* to *"Mujhe ghr ni jana!"* 😭😂 That's when we realized... Delhi se uppr kujh ni! 🫶🏻</p>
-            <p>₹150 in Chandni Chowk or ₹2000 in DLF... YES, we can afford both vibes. 😎</p>
-            <p>But what really happened in Delhi? <span class="highlight">Chlne ka imtehaan! 😭</span> Walking less than 15-16 km was impossible. Exploring roads, clothes, metros, drinks, the wonders of the world, and testing our ultimate walking capacity.</p>
-        </div>
-        <div class="scroll-indicator">⏬</div>
-    </section>
+        <!-- CHAPTER 3 -->
+        <section class="page">
+            <div class="card">
+                <h2>Chapter 3: Ethe ae v ho jnda 🤫</h2>
+                <p>Kaha aa gye hum? <span class="highlight">DIL WALON KI DILLI! 🫶🏻♥️</span></p>
+                <p>From saying, *"Mujhe toh Chandigarh jna hai, mai Delhi ja k mna krduga"* 😎 to realizing *"Delhi, Delhi haii yrr..."* ♥️</p>
+                <p>Kujh chahiye? THANKS! 🙏 Laser shows are normal, but have you ever seen the one at Qutub Minar? We just clicked photos there, and YOU... black black!! 😂😂</p>
+                <p>Then? Going to see the Taj Mahal and searching for Mumtaaz... not Shah Jahan's, but our own! 😂🤫</p>
+                <p>After falling for the dil wala shehr, we thought, let's just get exported here and become Delhiites... or should I say, Red Tape wale! 😂</p>
+                <div class="swipe-indicator" style="font-size: 0.9rem;"><span>⏬</span></div>
+            </div>
+        </section>
 
-    <!-- CHAPTER 5 (PART 2) -->
-    <section class="page">
-        <div class="card">
-            <h2>Chapter 5 (Part 2) 🦚</h2>
-            <p>Chlo bhai behno ko b mil aate hai 🐒🐊🦧🐅🐘🦜🦚 but walking like pure aesthetics and foreigners so nobody stops us! 😎</p>
-            <p>At first: *"Humayun kujh ni hai?"* Then: *"Yrrrr... ethe ta raje ne AC v lgvaya hai!"* 😂 It has everything, but of course, it's far and I was always exhausted... the one with the low BP, constantly tripping and crying. 🥲</p>
-            <p>What did Delhi give us? The shift from disliking to loving Poha 🤩 and transforming you into a pure Dosa person! 😗 Every place has a specialty, but Delhi isn't just special, it's <strong>dil</strong>. ❤️ We left some things behind and made a habit of others... YKIYK.</p>
-        </div>
-        <div class="scroll-indicator">⏬</div>
-    </section>
+        <!-- CHAPTER 4 -->
+        <section class="page">
+            <div class="card">
+                <h2>Chapter 4: The Separation Era 🚫</h2>
+                <p>Boss said: <span class="quote">"Navuu, tu na Silas nl ghtaa de."</span></p>
+                <p>But who is he to tell me what I'm gonna do? <span class="highlight">Mai toh aesthetic hu, jo mrji krugi! 😎</span></p>
+                <p>And then what? Our bond just grew stronger!</p>
+                <p>Exploring everything together, and of course, hunting down the absolute BEST Chole Bhature! 😭🫶🏻</p>
+                <div class="swipe-indicator" style="font-size: 0.9rem;"><span>⏬</span></div>
+            </div>
+        </section>
 
-    <!-- CHAPTER 6 -->
-    <section class="page">
-        <div class="card">
-            <h2>Chapter 6: Bday matlab Chandigarh 🎂</h2>
-            <p>The grand reunion of all the badminton fighters! 🏸</p>
-            <p>Desperately waiting to step in and cut the cake right at 12 AM... and what? <span class="highlight">Mission accomplished! 🎯</span></p>
-            <p>It was one of the best days ever. From navigating metros to hopping on a Rapido, it was a quick transition... and a strong realization that it's Delhi over anywhere else. 😭🫶🏻</p>
-            <p>Still, forever grateful for every single moment we've shared.</p>
-        </div>
-        <div class="scroll-indicator">⏬</div>
-    </section>
+        <!-- CHAPTER 5 (PART 1) -->
+        <section class="page">
+            <div class="card">
+                <h2>Chapter 5: Exploring Delhi 🚇</h2>
+                <p>From *"Mai nii jnaa.. vo sb honge udr"* to *"Mujhe ghr ni jana!"* 😭😂 That's when we realized... Delhi se uppr kujh ni! 🫶🏻</p>
+                <p>₹150 in Chandni Chowk or ₹2000 in DLF... YES, we can afford both vibes. 😎</p>
+                <p>But what really happened in Delhi? <span class="highlight">Chlne ka imtehaan! 😭</span> Walking less than 15-16 km was impossible. Exploring roads, clothes, metros, drinks, the wonders of the world, and testing our ultimate walking capacity.</p>
+                <div class="swipe-indicator" style="font-size: 0.9rem;"><span>⏬</span></div>
+            </div>
+        </section>
 
-    <!-- CHAPTER 7 -->
-    <section class="page">
-        <div class="card">
-            <h2>Chapter 7: The Unwritten Pages 📖</h2>
-            <p>Let’s see what comes next... new hurdles or pure adrenaline-fueled fun! 🎢</p>
-            <p>Hoping for the best, endless late-night convos, and unforgettable trips.</p>
-            <p>From <span class="quote">"You can’t"</span> to <span class="quote">"You CAN"</span>... it has been a beautifully long journey. ❤️</p>
-            <br>
-            <h2>Happiest Birthday, precious! 🎂</h2>
-            <p>Stay blessed always. 🧿 Ameen!</p>
-        </div>
-    </section>
+        <!-- CHAPTER 5 (PART 2) -->
+        <section class="page">
+            <div class="card">
+                <h2>Chapter 5 (Part 2) 🦚</h2>
+                <p>Chlo bhai behno ko b mil aate hai 🐒🐊🦧🐅🐘🦜🦚 but walking like pure aesthetics and foreigners so nobody stops us! 😎</p>
+                <p>At first: *"Humayun kujh ni hai?"* Then: *"Yrrrr... ethe ta raje ne AC v lgvaya hai!"* 😂 It has everything, but of course, it's far and I was always exhausted... the one with the low BP, constantly tripping and crying. 🥲</p>
+                <p>What did Delhi give us? The shift from disliking to loving Poha 🤩 and transforming you into a pure Dosa person! 😗 Every place has a specialty, but Delhi isn't just special, it's <strong>dil</strong>. ❤️ We left some things behind and made a habit of others... YKIYK.</p>
+                <div class="swipe-indicator" style="font-size: 0.9rem;"><span>⏬</span></div>
+            </div>
+        </section>
+
+        <!-- CHAPTER 6 -->
+        <section class="page">
+            <div class="card">
+                <h2>Chapter 6: Bday matlab Chandigarh 🎂</h2>
+                <p>The grand reunion of all the badminton fighters! 🏸</p>
+                <p>Desperately waiting to step in and cut the cake right at 12 AM... and what? <span class="highlight">Mission accomplished! 🎯</span></p>
+                <p>It was one of the best days ever. From navigating metros to hopping on a Rapido, it was a quick transition... and a strong realization that it's Delhi over anywhere else. 😭🫶🏻</p>
+                <p>Still, forever grateful for every single moment we've shared.</p>
+                <div class="swipe-indicator" style="font-size: 0.9rem;"><span>⏬</span></div>
+            </div>
+        </section>
+
+        <!-- CHAPTER 7 -->
+        <section class="page">
+            <div class="card">
+                <h2>Chapter 7: The Unwritten Pages 📖</h2>
+                <p>Let’s see what comes next... new hurdles or pure adrenaline-fueled fun! 🎢</p>
+                <p>Hoping for the best, endless late-night convos, and unforgettable trips.</p>
+                <p>From <span class="quote">"You can’t"</span> to <span class="quote">"You CAN"</span>... it has been a beautifully long journey. ❤️</p>
+                <br>
+                <h2>Happiest Birthday, precious! 🎂</h2>
+                <p>Stay blessed always. 🧿 Ameen!</p>
+            </div>
+        </section>
+
+    </div> <!-- End of scroll container -->
 
     <script>
         // --- 1. Glowing Orbs (Fireflies) Animation ---
@@ -293,31 +373,34 @@
             const orb = document.createElement('div');
             orb.classList.add('orb');
             
-            // Randomize styling for each orb
-            const size = Math.random() * 8 + 4; // 4px to 12px
+            const size = Math.random() * 8 + 4;
             orb.style.width = size + 'px';
             orb.style.height = size + 'px';
             orb.style.left = Math.random() * 100 + 'vw';
             
-            // Randomize animation
-            orb.style.animationDuration = (Math.random() * 6 + 6) + 's'; // 6s to 12s
+            orb.style.animationDuration = (Math.random() * 6 + 6) + 's';
             orb.style.animationDelay = (Math.random() * 5) + 's';
             
             magicContainer.appendChild(orb);
         }
 
-        // --- 2. Scroll Animation (Fade in cards when they enter the viewport) ---
+        // --- 2. Premium Scroll Animation ---
         const cards = document.querySelectorAll('.card');
+        const scrollContainer = document.querySelector('.scroll-container');
 
+        // Using root as the scroll container so it knows exactly when cards enter the visible area
         const observerOptions = {
-            root: null, 
-            threshold: 0.15 // Triggers slightly earlier for smooth reading on mobile
+            root: scrollContainer, 
+            threshold: 0.4 // Card animates in when 40% of it is visible
         };
 
-        const observer = new IntersectionObserver((entries, observer) => {
+        const observer = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
                     entry.target.classList.add('visible');
+                } else {
+                    // Optional: Remove class when scrolled away so it re-animates when going back up
+                    entry.target.classList.remove('visible');
                 }
             });
         }, observerOptions);
@@ -328,3 +411,4 @@
     </script>
 </body>
 </html>
+
