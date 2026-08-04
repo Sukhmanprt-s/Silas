@@ -11,7 +11,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Quicksand:wght@400;600;700&display=swap" rel="stylesheet">
 
     <style>
-        /* Global Styles & Scroll Snapping */
+        /* Global Styles */
         * {
             margin: 0;
             padding: 0;
@@ -19,11 +19,10 @@
         }
 
         html, body {
-            height: 100vh;
             font-family: 'Quicksand', sans-serif;
             overflow-x: hidden;
             scroll-behavior: smooth;
-            scroll-snap-type: y mandatory;
+            /* Scroll snapping removed so it doesn't jump over long text */
             
             /* Upgraded Dynamic Gradient Background */
             background: linear-gradient(45deg, #ff9a9e, #fecfef, #a1c4fd, #c2e9fb);
@@ -65,17 +64,16 @@
             100% { transform: translateY(-110vh) scale(1.2); opacity: 0; }
         }
 
-        /* Page Layout */
+        /* Page Layout - Changed to min-height to allow growth */
         .page {
-            height: 100vh;
+            min-height: 100vh;
             width: 100vw;
-            scroll-snap-align: start;
             display: flex;
             justify-content: center;
             align-items: center;
             position: relative;
             z-index: 10;
-            padding: 20px;
+            padding: 80px 20px; /* Added breathing room at top and bottom */
         }
 
         /* Upgraded Glassmorphism Story Cards */
@@ -133,10 +131,10 @@
             border-radius: 10px;
         }
 
-        /* Scroll Down Indicator */
+        /* Scroll Down Indicator - Changed to relative positioning for long content */
         .scroll-indicator {
             position: absolute;
-            bottom: 30px;
+            bottom: 20px;
             left: 50%;
             transform: translateX(-50%);
             animation: bounce 2s infinite;
@@ -157,7 +155,8 @@
             h1 { font-size: 2.8rem; }
             h2 { font-size: 2.2rem; }
             p { font-size: 1rem; }
-            .card { padding: 25px; margin: 15px; }
+            .card { padding: 25px; }
+            .page { padding: 60px 15px; } /* Prevent card from touching screen edges */
         }
     </style>
 </head>
@@ -289,7 +288,7 @@
 
         const observerOptions = {
             root: null, 
-            threshold: 0.25 // triggers slightly earlier for a smoother feel
+            threshold: 0.15 // Triggers slightly earlier for smooth reading on mobile
         };
 
         const observer = new IntersectionObserver((entries, observer) => {
