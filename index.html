@@ -22,7 +22,6 @@
             font-family: 'Quicksand', sans-serif;
             overflow-x: hidden;
             scroll-behavior: smooth;
-            /* Scroll snapping removed so it doesn't jump over long text */
             
             /* Upgraded Dynamic Gradient Background */
             background: linear-gradient(45deg, #ff9a9e, #fecfef, #a1c4fd, #c2e9fb);
@@ -64,7 +63,7 @@
             100% { transform: translateY(-110vh) scale(1.2); opacity: 0; }
         }
 
-        /* Page Layout - Changed to min-height to allow growth */
+        /* Page Layout */
         .page {
             min-height: 100vh;
             width: 100vw;
@@ -73,7 +72,7 @@
             align-items: center;
             position: relative;
             z-index: 10;
-            padding: 80px 20px; /* Added breathing room at top and bottom */
+            padding: 60px 20px;
         }
 
         /* Upgraded Glassmorphism Story Cards */
@@ -84,7 +83,7 @@
             border: 1px solid rgba(255, 255, 255, 0.6);
             border-radius: 24px;
             padding: 40px;
-            max-width: 650px;
+            max-width: 700px; /* Increased max-width */
             text-align: center;
             box-shadow: 0 10px 40px 0 rgba(31, 38, 135, 0.15);
             transform: translateY(50px) scale(0.95);
@@ -131,7 +130,7 @@
             border-radius: 10px;
         }
 
-        /* Scroll Down Indicator - Changed to relative positioning for long content */
+        /* Scroll Down Indicator */
         .scroll-indicator {
             position: absolute;
             bottom: 20px;
@@ -150,13 +149,21 @@
             60% { transform: translateY(-7px) translateX(-50%); }
         }
 
-        /* Mobile Adjustments */
+        /* EXTREME MOBILE ADJUSTMENTS FOR FITTING */
         @media (max-width: 600px) {
-            h1 { font-size: 2.8rem; }
-            h2 { font-size: 2.2rem; }
-            p { font-size: 1rem; }
-            .card { padding: 25px; }
-            .page { padding: 60px 15px; } /* Prevent card from touching screen edges */
+            h1 { font-size: 2.2rem; margin-bottom: 12px; }
+            h2 { font-size: 2rem; margin-bottom: 12px; }
+            p { font-size: 0.95rem; line-height: 1.4; margin-bottom: 12px; }
+            
+            /* Maximizing screen width */
+            .page { padding: 40px 10px; } 
+            .card { 
+                padding: 20px 15px; 
+                width: 95%; /* Makes it as wide as possible */
+                max-width: none; 
+                border-radius: 18px;
+            }
+            .scroll-indicator { bottom: 10px; font-size: 2rem; }
         }
     </style>
 </head>
@@ -165,7 +172,7 @@
     <!-- Floating Background Effect -->
     <div id="magic-container"></div>
 
-    <!-- CHAPTER 1 -->
+    <!-- CHAPTER 1 (PART 1) -->
     <section class="page">
         <div class="card">
             <h1>Chapter 1: Badminton Buddies 🏸</h1>
@@ -173,6 +180,14 @@
             <p>And the classic, <span class="quote">"Koi racket nhi dera mujhe Silassss!!"</span> 😭😭😭</p>
             <p>From shouting *"Ek re, dvaara dvaara!"* 🫢 to realizing *"honesty is the best policy"* 😗... we've come so far. Do you know how? Because of that one slap you got! 🥺</p>
             <p>But I still stand by it—<span class="highlight">glti se hogya tha!</span> 😭🫠 Actually, it was for the best; the real entity was finally revealed! 😗</p>
+        </div>
+        <div class="scroll-indicator">⏬</div>
+    </section>
+
+    <!-- CHAPTER 1 (PART 2) -->
+    <section class="page">
+        <div class="card">
+            <h2>Chapter 1 (Part 2) 🏸</h2>
             <p>It was all about magic moments, racket fights, and slowly... tea fights! 😂 We had zero tiredness and endless enthusiasm for the court.</p>
             <p><em>Acha, fir aage kya hua? Badminton khtm toh sb khtm? Nhiii toh... aage ye hua! 👇</em></p>
         </div>
@@ -218,13 +233,21 @@
         <div class="scroll-indicator">⏬</div>
     </section>
 
-    <!-- CHAPTER 5 -->
+    <!-- CHAPTER 5 (PART 1) -->
     <section class="page">
         <div class="card">
-            <h2>Chapter 5: Exploring Delhi, Dil Se 🚇</h2>
+            <h2>Chapter 5: Exploring Delhi 🚇</h2>
             <p>From *"Mai nii jnaa.. vo sb honge udr"* to *"Mujhe ghr ni jana!"* 😭😂 That's when we realized... Delhi se uppr kujh ni! 🫶🏻</p>
             <p>₹150 in Chandni Chowk or ₹2000 in DLF... YES, we can afford both vibes. 😎</p>
             <p>But what really happened in Delhi? <span class="highlight">Chlne ka imtehaan! 😭</span> Walking less than 15-16 km was impossible. Exploring roads, clothes, metros, drinks, the wonders of the world, and testing our ultimate walking capacity.</p>
+        </div>
+        <div class="scroll-indicator">⏬</div>
+    </section>
+
+    <!-- CHAPTER 5 (PART 2) -->
+    <section class="page">
+        <div class="card">
+            <h2>Chapter 5 (Part 2) 🦚</h2>
             <p>Chlo bhai behno ko b mil aate hai 🐒🐊🦧🐅🐘🦜🦚 but walking like pure aesthetics and foreigners so nobody stops us! 😎</p>
             <p>At first: *"Humayun kujh ni hai?"* Then: *"Yrrrr... ethe ta raje ne AC v lgvaya hai!"* 😂 It has everything, but of course, it's far and I was always exhausted... the one with the low BP, constantly tripping and crying. 🥲</p>
             <p>What did Delhi give us? The shift from disliking to loving Poha 🤩 and transforming you into a pure Dosa person! 😗 Every place has a specialty, but Delhi isn't just special, it's <strong>dil</strong>. ❤️ We left some things behind and made a habit of others... YKIYK.</p>
