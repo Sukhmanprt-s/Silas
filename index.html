@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Happiest Birthday! 🎉</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Quicksand:wght@400;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        /* Global Styles & Scroll Snapping */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html, body {
+            height: 100vh;
+            font-family: 'Quicksand', sans-serif;
+            overflow-x: hidden;
+            scroll-behavior: smooth;
+            scroll-snap-type: y mandatory;
+            
+            /* Upgraded Dynamic Gradient Background */
+            background: linear-gradient(45deg, #ff9a9e, #fecfef, #a1c4fd, #c2e9fb);
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
+            color: #2c3e50;
+        }
+
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* Upgraded Floating Magic Orbs (Fireflies) */
+        #magic-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .orb {
+            position: absolute;
+            bottom: -10%;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.8);
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.8), 0 0 20px rgba(255, 255, 255, 0.4);
+            animation: floatUp linear infinite;
+        }
+
+        @keyframes floatUp {
+            0% { transform: translateY(0) scale(0.5); opacity: 0; }
+            20% { opacity: 1; }
+            80% { opacity: 0.8; }
+            100% { transform: translateY(-110vh) scale(1.2); opacity: 0; }
+        }
+
+        /* Page Layout */
+        .page {
+            height: 100vh;
+            width: 100vw;
+            scroll-snap-align: start;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            z-index: 10;
+            padding: 20px;
+        }
+
+        /* Upgraded Glassmorphism Story Cards */
+        .card {
+            background: rgba(255, 255, 255, 0.35);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            border-radius: 24px;
+            padding: 40px;
+            max-width: 650px;
+            text-align: center;
+            box-shadow: 0 10px 40px 0 rgba(31, 38, 135, 0.15);
+            transform: translateY(50px) scale(0.95);
+            opacity: 0;
+            transition: all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+
+        .card.visible {
+            transform: translateY(0) scale(1);
+            opacity: 1;
+        }
+
+        /* Typography */
+        h1, h2 {
+            font-family: 'Dancing Script', cursive;
+            color: #d81b60;
+            text-shadow: 2px 2px 4px rgba(255,255,255,0.8);
+            margin-bottom: 20px;
+            line-height: 1.2;
+        }
+
+        h1 { font-size: 3.5rem; }
+        h2 { font-size: 2.8rem; }
+
+        p {
+            font-size: 1.15rem;
+            color: #333;
+            line-height: 1.7;
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+
+        .quote {
+            font-style: italic;
+            color: #5e35b1;
+            font-weight: 700;
+        }
+
+        .highlight {
+            color: #d81b60;
+            font-weight: 700;
+            background: rgba(255, 255, 255, 0.5);
+            padding: 2px 8px;
+            border-radius: 10px;
+        }
+
+        /* Scroll Down Indicator */
+        .scroll-indicator {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            animation: bounce 2s infinite;
+            color: #d81b60;
+            font-size: 2.5rem;
+            pointer-events: none;
+            filter: drop-shadow(0px 2px 5px rgba(255,255,255,0.8));
+        }
+
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% { transform: translateY(0) translateX(-50%); }
+            40% { transform: translateY(-15px) translateX(-50%); }
+            60% { transform: translateY(-7px) translateX(-50%); }
+        }
+
+        /* Mobile Adjustments */
+        @media (max-width: 600px) {
+            h1 { font-size: 2.8rem; }
+            h2 { font-size: 2.2rem; }
+            p { font-size: 1rem; }
+            .card { padding: 25px; margin: 15px; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Floating Background Effect -->
+    <div id="magic-container"></div>
+
+    <!-- CHAPTER 1 -->
+    <section class="page">
+        <div class="card">
+            <h1>Chapter 1: Badminton Buddies 🏸</h1>
+            <p>It all started with, <span class="quote">"Tuhnu ki lagda mai shuru toh langdaa?"</span> 😂</p>
+            <p>And the classic, <span class="quote">"Koi racket nhi dera mujhe Silassss!!"</span> 😭😭😭</p>
+            <p>From shouting *"Ek re, dvaara dvaara!"* 🫢 to realizing *"honesty is the best policy"* 😗... we've come so far. Do you know how? Because of that one slap you got! 🥺</p>
+            <p>But I still stand by it—<span class="highlight">glti se hogya tha!</span> 😭🫠 Actually, it was for the best; the real entity was finally revealed! 😗</p>
+            <p>It was all about magic moments, racket fights, and slowly... tea fights! 😂 We had zero tiredness and endless enthusiasm for the court.</p>
+            <p><em>Acha, fir aage kya hua? Badminton khtm toh sb khtm? Nhiii toh... aage ye hua! 👇</em></p>
+        </div>
+        <div class="scroll-indicator">⏬</div>
+    </section>
+
+    <!-- CHAPTER 2 -->
+    <section class="page">
+        <div class="card">
+            <h2>Chapter 2: Complex Diaries ☕</h2>
+            <p><span class="highlight">Khatta = Silas di hoodie!</span></p>
+            <p>To be honest, our world revolved around CHAII, CHAII, CHAII back then... and now it's BEER, BEER, BEER! 😂 How times change.</p>
+            <p>From *"Mai chaii ni peeti"* to literally finishing almost everyone else's chai. <br>
+            <span class="quote">"Hello! Kaha ho? Shanti Nagar. Mai cllg hu... ok coming."</span> 👾</p>
+            <p>Mai 150rs te guzara krn wala... 😂 and now, the budget has definitely upgraded!</p>
+            <p><em>Bs college hi ghumna hai kya? Chlo fir kahin aur ghumte hai.</em> Where? The place where the chole bhature are incredibly lazeez! Still didn't get it? Chlo fir, leke chle... 🚆</p>
+        </div>
+        <div class="scroll-indicator">⏬</div>
+    </section>
+
+    <!-- CHAPTER 3 -->
+    <section class="page">
+        <div class="card">
+            <h2>Chapter 3: Ethe ae v ho jnda 🤫</h2>
+            <p>Kaha aa gye hum? <span class="highlight">DIL WALON KI DILLI! 🫶🏻♥️</span></p>
+            <p>From saying, *"Mujhe toh Chandigarh jna hai, mai Delhi ja k mna krduga"* 😎 to realizing *"Delhi, Delhi haii yrr..."* ♥️</p>
+            <p>Kujh chahiye? THANKS! 🙏 Laser shows are normal, but have you ever seen the one at Qutub Minar? We just clicked photos there, and YOU... black black!! 😂😂</p>
+            <p>Then? Going to see the Taj Mahal and searching for Mumtaaz... not Shah Jahan's, but our own! 😂🤫</p>
+            <p>After falling for the dil wala shehr, we thought, let's just get exported here and become Delhiites... or should I say, Red Tape wale! 😂</p>
+        </div>
+        <div class="scroll-indicator">⏬</div>
+    </section>
+
+    <!-- CHAPTER 4 -->
+    <section class="page">
+        <div class="card">
+            <h2>Chapter 4: The Separation Era 🚫</h2>
+            <p>Boss said: <span class="quote">"Navuu, tu na Silas nl ghtaa de."</span></p>
+            <p>But who is he to tell me what I'm gonna do? <span class="highlight">Mai toh aesthetic hu, jo mrji krugi! 😎</span></p>
+            <p>And then what? Our bond just grew stronger!</p>
+            <p>Exploring everything together, and of course, hunting down the absolute BEST Chole Bhature! 😭🫶🏻</p>
+        </div>
+        <div class="scroll-indicator">⏬</div>
+    </section>
+
+    <!-- CHAPTER 5 -->
+    <section class="page">
+        <div class="card">
+            <h2>Chapter 5: Exploring Delhi, Dil Se 🚇</h2>
+            <p>From *"Mai nii jnaa.. vo sb honge udr"* to *"Mujhe ghr ni jana!"* 😭😂 That's when we realized... Delhi se uppr kujh ni! 🫶🏻</p>
+            <p>₹150 in Chandni Chowk or ₹2000 in DLF... YES, we can afford both vibes. 😎</p>
+            <p>But what really happened in Delhi? <span class="highlight">Chlne ka imtehaan! 😭</span> Walking less than 15-16 km was impossible. Exploring roads, clothes, metros, drinks, the wonders of the world, and testing our ultimate walking capacity.</p>
+            <p>Chlo bhai behno ko b mil aate hai 🐒🐊🦧🐅🐘🦜🦚 but walking like pure aesthetics and foreigners so nobody stops us! 😎</p>
+            <p>At first: *"Humayun kujh ni hai?"* Then: *"Yrrrr... ethe ta raje ne AC v lgvaya hai!"* 😂 It has everything, but of course, it's far and I was always exhausted... the one with the low BP, constantly tripping and crying. 🥲</p>
+            <p>What did Delhi give us? The shift from disliking to loving Poha 🤩 and transforming you into a pure Dosa person! 😗 Every place has a specialty, but Delhi isn't just special, it's <strong>dil</strong>. ❤️ We left some things behind and made a habit of others... YKIYK.</p>
+        </div>
+        <div class="scroll-indicator">⏬</div>
+    </section>
+
+    <!-- CHAPTER 6 -->
+    <section class="page">
+        <div class="card">
+            <h2>Chapter 6: Bday matlab Chandigarh 🎂</h2>
+            <p>The grand reunion of all the badminton fighters! 🏸</p>
+            <p>Desperately waiting to step in and cut the cake right at 12 AM... and what? <span class="highlight">Mission accomplished! 🎯</span></p>
+            <p>It was one of the best days ever. From navigating metros to hopping on a Rapido, it was a quick transition... and a strong realization that it's Delhi over anywhere else. 😭🫶🏻</p>
+            <p>Still, forever grateful for every single moment we've shared.</p>
+        </div>
+        <div class="scroll-indicator">⏬</div>
+    </section>
+
+    <!-- CHAPTER 7 -->
+    <section class="page">
+        <div class="card">
+            <h2>Chapter 7: The Unwritten Pages 📖</h2>
+            <p>Let’s see what comes next... new hurdles or pure adrenaline-fueled fun! 🎢</p>
+            <p>Hoping for the best, endless late-night convos, and unforgettable trips.</p>
+            <p>From <span class="quote">"You can’t"</span> to <span class="quote">"You CAN"</span>... it has been a beautifully long journey. ❤️</p>
+            <br>
+            <h2>Happiest Birthday, precious! 🎂</h2>
+            <p>Stay blessed always. 🧿 Ameen!</p>
+        </div>
+    </section>
+
+    <script>
+        // --- 1. Glowing Orbs (Fireflies) Animation ---
+        const magicContainer = document.getElementById('magic-container');
+        const orbCount = 20;
+
+        for (let i = 0; i < orbCount; i++) {
+            createOrb();
+        }
+
+        function createOrb() {
+            const orb = document.createElement('div');
+            orb.classList.add('orb');
+            
+            // Randomize styling for each orb
+            const size = Math.random() * 8 + 4; // 4px to 12px
+            orb.style.width = size + 'px';
+            orb.style.height = size + 'px';
+            orb.style.left = Math.random() * 100 + 'vw';
+            
+            // Randomize animation
+            orb.style.animationDuration = (Math.random() * 6 + 6) + 's'; // 6s to 12s
+            orb.style.animationDelay = (Math.random() * 5) + 's';
+            
+            magicContainer.appendChild(orb);
+        }
+
+        // --- 2. Scroll Animation (Fade in cards when they enter the viewport) ---
+        const cards = document.querySelectorAll('.card');
+
+        const observerOptions = {
+            root: null, 
+            threshold: 0.25 // triggers slightly earlier for a smoother feel
+        };
+
+        const observer = new IntersectionObserver((entries, observer) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, observerOptions);
+
+        cards.forEach(card => {
+            observer.observe(card);
+        });
+    </script>
+</body>
+</html>
