@@ -20,9 +20,8 @@
 
         html, body {
             font-family: 'Quicksand', sans-serif;
-            overflow: hidden; /* Hide the main body scrollbar to use our custom container */
+            overflow: hidden; 
             
-            /* Upgraded Dynamic Gradient Background */
             background: linear-gradient(45deg, #ff9a9e, #fecfef, #a1c4fd, #c2e9fb);
             background-size: 400% 400%;
             animation: gradientBG 15s ease infinite;
@@ -35,26 +34,74 @@
             100% { background-position: 0% 50%; }
         }
 
-        /* PREMIUM SCROLL CONTAINER */
-        .scroll-container {
-            height: 100vh;
-            height: 100dvh; /* Fixes mobile browser UI bar jump */
+        /* --- THE CURTAIN OVERLAY --- */
+        #curtain-container {
+            position: fixed;
+            top: 0;
+            left: 0;
             width: 100vw;
-            overflow-y: scroll;
-            
-            /* THIS CREATES THE "ZIGGLE" AND PREMIUM SNAP FEEL */
-            scroll-snap-type: y mandatory;
-            scroll-behavior: smooth;
-            
-            /* Hide scrollbar for a clean app feel */
-            scrollbar-width: none; 
-        }
-        .scroll-container::-webkit-scrollbar { 
-            display: none; 
+            height: 100vh;
+            z-index: 9999;
+            display: flex;
+            overflow: hidden;
+            pointer-events: all;
+            transition: visibility 1.5s;
         }
 
-        /* Floating Magic Orbs (Fireflies) */
-        #magic-container {
+        .curtain-panel {
+            width: 50%;
+            height: 100%;
+            background: linear-gradient(90deg, #f0e6d2 0%, #fdfbf7 50%, #f0e6d2 100%);
+            box-shadow: inset 0 0 50px rgba(0,0,0,0.1);
+            transition: transform 1.5s cubic-bezier(0.77, 0, 0.175, 1);
+            position: relative;
+        }
+
+        .curtain-left { border-right: 2px solid rgba(0,0,0,0.05); }
+        .curtain-right { border-left: 2px solid rgba(0,0,0,0.05); }
+
+        #open-btn {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 10000;
+            background: rgba(255, 255, 255, 0.9);
+            border: 2px solid #d81b60;
+            color: #d81b60;
+            padding: 15px 40px;
+            font-size: 1.5rem;
+            font-family: 'Dancing Script', cursive;
+            border-radius: 50px;
+            cursor: pointer;
+            box-shadow: 0 10px 30px rgba(216, 27, 96, 0.3);
+            animation: pulseBtn 2s infinite;
+            transition: opacity 0.5s;
+        }
+
+        @keyframes pulseBtn {
+            0%, 100% { transform: translate(-50%, -50%) scale(1); }
+            50% { transform: translate(-50%, -50%) scale(1.05); }
+        }
+
+        #curtain-container.open .curtain-left { transform: translateX(-100%); }
+        #curtain-container.open .curtain-right { transform: translateX(100%); }
+        #curtain-container.open #open-btn { opacity: 0; pointer-events: none; }
+
+        /* --- PREMIUM SCROLL CONTAINER --- */
+        .scroll-container {
+            height: 100vh;
+            height: 100dvh; 
+            width: 100vw;
+            overflow-y: scroll;
+            scroll-snap-type: y mandatory;
+            scroll-behavior: smooth;
+            scrollbar-width: none; 
+        }
+        .scroll-container::-webkit-scrollbar { display: none; }
+
+        /* --- MAGIC ORBS & RAINING HEARTS --- */
+        #magic-container, #hearts-container {
             position: fixed;
             top: 0;
             left: 0;
@@ -73,6 +120,15 @@
             animation: floatUp linear infinite;
         }
 
+        .rain-heart {
+            position: absolute;
+            top: -10%;
+            font-size: 1.5rem;
+            animation: rainDown linear infinite;
+            opacity: 0.8;
+            filter: drop-shadow(0 2px 5px rgba(0,0,0,0.1));
+        }
+
         @keyframes floatUp {
             0% { transform: translateY(0) scale(0.5); opacity: 0; }
             20% { opacity: 1; }
@@ -80,7 +136,14 @@
             100% { transform: translateY(-110vh) scale(1.2); opacity: 0; }
         }
 
-        /* Page Layout */
+        @keyframes rainDown {
+            0% { transform: translateY(0) rotate(0deg); opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { transform: translateY(110vh) rotate(360deg); opacity: 0; }
+        }
+
+        /* --- PAGE & CARDS --- */
         .page {
             height: 100vh;
             height: 100dvh;
@@ -91,13 +154,10 @@
             position: relative;
             z-index: 10;
             padding: 20px;
-            
-            /* Makes the page snap perfectly into place */
             scroll-snap-align: center;
-            scroll-snap-stop: always; /* Prevents swiping past multiple pages at once */
+            scroll-snap-stop: always; 
         }
 
-        /* Upgraded Glassmorphism Story Cards */
         .card {
             background: rgba(255, 255, 255, 0.35);
             backdrop-filter: blur(16px);
@@ -107,48 +167,89 @@
             padding: 40px;
             width: 100%;
             max-width: 650px;
-            
-            /* THE FIX: Prevents text from bleeding out on small phones */
-            max-height: 85vh; 
-            overflow-y: auto; /* Allows scrolling INSIDE the card if text is too long */
-            scrollbar-width: none;
-            
             text-align: center;
             box-shadow: 0 10px 40px 0 rgba(31, 38, 135, 0.15);
             transform: translateY(60px) scale(0.9);
             opacity: 0;
-            transition: all 0.8s cubic-bezier(0.34, 1.56, 0.64, 1); /* Bouncy premium intro */
+            transition: all 0.8s cubic-bezier(0.34, 1.56, 0.64, 1); 
         }
-        .card::-webkit-scrollbar { display: none; }
 
         .card.visible {
             transform: translateY(0) scale(1);
             opacity: 1;
         }
 
-        /* Cover Page Specific Styles */
+        /* --- CUTE CSS CAKE --- */
         .cover-card {
             background: rgba(255, 255, 255, 0.5);
             border: 2px solid rgba(255, 255, 255, 0.8);
             box-shadow: 0 15px 50px rgba(216, 27, 96, 0.2);
+            overflow: visible;
         }
 
-        .cute-cake {
-            font-size: 5rem;
-            margin-bottom: 10px;
-            display: inline-block;
-            animation: floatCake 3s ease-in-out infinite;
+        .custom-cake {
+            position: relative;
+            width: 140px;
+            height: 70px;
+            background: #ff8fa3;
+            border-radius: 10px;
+            margin: 50px auto 25px auto;
+            box-shadow: inset 0 -10px 0 rgba(0,0,0,0.1);
         }
 
-        @keyframes floatCake {
-            0%, 100% { transform: translateY(0) rotate(-5deg); }
-            50% { transform: translateY(-15px) rotate(5deg); }
+        .frosting {
+            position: absolute;
+            top: -15px;
+            left: -5px;
+            width: 150px;
+            height: 35px;
+            background: #fff;
+            border-radius: 20px;
+            box-shadow: 0 5px 0 #ffe4e1;
         }
 
+        .candles-container {
+            position: absolute;
+            top: -45px;
+            width: 100%;
+            display: flex;
+            justify-content: space-evenly;
+            padding: 0 20px;
+        }
+
+        .candle {
+            width: 12px;
+            height: 40px;
+            background: repeating-linear-gradient(45deg, #fff, #fff 4px, #d81b60 4px, #d81b60 8px);
+            border-radius: 3px;
+            position: relative;
+            box-shadow: 2px 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .flame {
+            position: absolute;
+            top: -22px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 14px;
+            height: 22px;
+            background: #ff9800;
+            border-radius: 50% 50% 20% 20% / 60% 60% 40% 40%;
+            box-shadow: 0 0 15px #ff9800, 0 0 30px #ffeb3b;
+            animation: flicker 0.4s ease-in-out infinite alternate;
+        }
+
+        @keyframes flicker {
+            0% { transform: translateX(-50%) scale(0.9) rotate(-3deg); opacity: 0.8; box-shadow: 0 0 10px #ff9800, 0 0 20px #ffeb3b;}
+            100% { transform: translateX(-50%) scale(1.1) rotate(3deg); opacity: 1; box-shadow: 0 0 20px #ff9800, 0 0 40px #ffeb3b;}
+        }
+
+        /* --- TYPOGRAPHY & INDICATORS --- */
         .cover-title {
-            font-size: 4rem;
+            font-size: 4.5rem;
             color: #d81b60;
-            margin-bottom: 10px;
+            margin-bottom: 5px;
+            line-height: 1.1;
         }
 
         .cover-subtitle {
@@ -157,7 +258,6 @@
             font-weight: 700;
         }
 
-        /* Typography */
         h1, h2 {
             font-family: 'Dancing Script', cursive;
             color: #d81b60;
@@ -191,56 +291,78 @@
             border-radius: 10px;
         }
 
-        /* Swipe Up Indicator */
         .swipe-indicator {
-            margin-top: 30px;
+            margin-top: 25px;
             display: flex;
             flex-direction: column;
             align-items: center;
             color: #d81b60;
             font-weight: 700;
-            font-size: 1.2rem;
+            font-size: 1.1rem;
             animation: pulseFade 2s infinite;
         }
 
-        .swipe-indicator span {
-            font-size: 2rem;
-            margin-top: 5px;
-        }
+        .swipe-indicator span { font-size: 2rem; margin-top: 2px; }
 
         @keyframes pulseFade {
             0%, 100% { transform: translateY(0); opacity: 0.5; }
             50% { transform: translateY(-10px); opacity: 1; }
         }
 
-        /* EXTREME MOBILE ADJUSTMENTS FOR FITTING */
+        /* EXTREME MOBILE ADJUSTMENTS */
         @media (max-width: 600px) {
+            .page { padding: 10px; } 
             h1 { font-size: 2.5rem; margin-bottom: 12px; }
             h2 { font-size: 2.2rem; margin-bottom: 12px; }
-            p { font-size: 1rem; line-height: 1.4; margin-bottom: 12px; }
+            p { font-size: 0.95rem; line-height: 1.45; margin-bottom: 10px; }
             
-            .card { 
-                padding: 25px 15px; 
-                width: 92%; 
-                border-radius: 20px;
-            }
-            .cover-title { font-size: 3.2rem; }
+            .card { padding: 25px 15px; width: 95%; border-radius: 20px; }
+            .cover-title { font-size: 3.8rem; }
+            .swipe-indicator { margin-top: 15px; font-size: 1rem; }
+            .swipe-indicator span { font-size: 1.5rem; }
         }
     </style>
 </head>
 <body>
 
-    <!-- Floating Background Effect -->
-    <div id="magic-container"></div>
+    <!-- HIDDEN AUDIO PLAYERS -->
+    <!-- Audio 1 plays only on the cover page -->
+    <audio id="audio-1" loop>
+        <source src="song1.mp3" type="audio/mpeg">
+    </audio>
+    
+    <!-- Audio 2 plays only on the last page -->
+    <audio id="audio-2" loop>
+        <source src="song2.mp3" type="audio/mpeg">
+    </audio>
 
-    <!-- MAIN SCROLL CONTAINER FOR THE "SNAP" FEEL -->
+    <!-- CURTAIN OVERLAY -->
+    <div id="curtain-container">
+        <div class="curtain-panel curtain-left"></div>
+        <div class="curtain-panel curtain-right"></div>
+        <button id="open-btn">Tap to Open ✨</button>
+    </div>
+
+    <!-- BACKGROUND EFFECTS -->
+    <div id="magic-container"></div>
+    <div id="hearts-container"></div>
+
+    <!-- MAIN SCROLL CONTAINER -->
     <div class="scroll-container">
 
-        <!-- NEW COVER PAGE (Chapter 0) -->
+        <!-- COVER PAGE (ADDED ID 'cover-card') -->
         <section class="page">
-            <div class="card cover-card">
-                <div class="cute-cake">🎂</div>
-                <h1 class="cover-title">Happy B'day!!</h1>
+            <div class="card cover-card" id="cover-card">
+                <div class="custom-cake">
+                    <div class="frosting"></div>
+                    <div class="candles-container">
+                        <div class="candle"><div class="flame"></div></div>
+                        <div class="candle"><div class="flame"></div></div>
+                        <div class="candle"><div class="flame"></div></div>
+                    </div>
+                </div>
+
+                <h1 class="cover-title">Happiest<br>Birthday!!</h1>
                 <p class="cover-subtitle">Ready for a little trip down memory lane? 😉✨</p>
                 
                 <div class="swipe-indicator">
@@ -281,7 +403,7 @@
                 <p>From *"Mai chaii ni peeti"* to literally finishing almost everyone else's chai. <br>
                 <span class="quote">"Hello! Kaha ho? Shanti Nagar. Mai cllg hu... ok coming."</span> 👾</p>
                 <p>Mai 150rs te guzara krn wala... 😂 and now, the budget has definitely upgraded!</p>
-                <p><em>Bs college hi ghumna hai kya? Chlo fir kahin aur ghumte hai.</em> Where? The place where the chole bhature are incredibly lazeez! Still didn't get it? Chlo fir, leke chle... 🚆</p>
+                <p><em>Bs college hi ghumna hai kya? Chlo fir kahin aur ghumte hai.</em> Where? The place where the chole bhature are incredibly lazeez! Still didnt get it? Chlo fir, leke chle... 🚆</p>
                 <div class="swipe-indicator" style="font-size: 0.9rem;"><span>⏬</span></div>
             </div>
         </section>
@@ -345,9 +467,9 @@
             </div>
         </section>
 
-        <!-- CHAPTER 7 -->
+        <!-- CHAPTER 7 (ADDED ID 'last-card' FOR AUDIO TRIGGER) -->
         <section class="page">
-            <div class="card">
+            <div class="card" id="last-card">
                 <h2>Chapter 7: The Unwritten Pages 📖</h2>
                 <p>Let’s see what comes next... new hurdles or pure adrenaline-fueled fun! 🎢</p>
                 <p>Hoping for the best, endless late-night convos, and unforgettable trips.</p>
@@ -358,49 +480,100 @@
             </div>
         </section>
 
-    </div> <!-- End of scroll container -->
+    </div>
 
     <script>
+        // --- 0. CURTAIN & AUDIO LOGIC ---
+        const curtainContainer = document.getElementById('curtain-container');
+        const openBtn = document.getElementById('open-btn');
+        const audio1 = document.getElementById('audio-1');
+        const audio2 = document.getElementById('audio-2');
+        let curtainOpened = false;
+
+        openBtn.addEventListener('click', () => {
+            curtainContainer.classList.add('open');
+            curtainOpened = true;
+            
+            // Play first music on click
+            audio1.play().catch(e => console.log("Audio play blocked", e));
+            
+            // Remove curtain from DOM after animation
+            setTimeout(() => {
+                curtainContainer.style.display = 'none';
+                startRainingHearts(); 
+            }, 1500);
+        });
+
         // --- 1. Glowing Orbs (Fireflies) Animation ---
         const magicContainer = document.getElementById('magic-container');
-        const orbCount = 20;
-
-        for (let i = 0; i < orbCount; i++) {
-            createOrb();
-        }
-
-        function createOrb() {
+        for (let i = 0; i < 15; i++) {
             const orb = document.createElement('div');
             orb.classList.add('orb');
-            
             const size = Math.random() * 8 + 4;
             orb.style.width = size + 'px';
             orb.style.height = size + 'px';
             orb.style.left = Math.random() * 100 + 'vw';
-            
             orb.style.animationDuration = (Math.random() * 6 + 6) + 's';
             orb.style.animationDelay = (Math.random() * 5) + 's';
-            
             magicContainer.appendChild(orb);
         }
 
-        // --- 2. Premium Scroll Animation ---
+        // --- 2. Raining Hearts Animation ---
+        const heartsContainer = document.getElementById('hearts-container');
+        const hearts = ['❤️', '💖', '✨', '🤍', '💕'];
+        
+        function startRainingHearts() {
+            setInterval(() => {
+                const heart = document.createElement('div');
+                heart.classList.add('rain-heart');
+                heart.innerText = hearts[Math.floor(Math.random() * hearts.length)];
+                heart.style.left = Math.random() * 100 + 'vw';
+                heart.style.fontSize = (Math.random() * 15 + 15) + 'px';
+                heart.style.animationDuration = (Math.random() * 3 + 4) + 's'; 
+                heartsContainer.appendChild(heart);
+                
+                setTimeout(() => { heart.remove(); }, 8000);
+            }, 300); 
+        }
+
+        // --- 3. Premium Scroll & Dual Audio Controller (UPDATED LOGIC) ---
         const cards = document.querySelectorAll('.card');
         const scrollContainer = document.querySelector('.scroll-container');
 
-        // Using root as the scroll container so it knows exactly when cards enter the visible area
         const observerOptions = {
             root: scrollContainer, 
-            threshold: 0.4 // Card animates in when 40% of it is visible
+            threshold: 0.4 
         };
 
         const observer = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
+                // When a card comes into view
                 if (entry.isIntersecting) {
                     entry.target.classList.add('visible');
-                } else {
-                    // Optional: Remove class when scrolled away so it re-animates when going back up
+                    
+                    // AUDIO SWITCH LOGIC: Play Audio 1 ONLY if Cover Card is in view
+                    if(entry.target.id === 'cover-card' && curtainOpened) {
+                        audio1.play().catch(e => console.log("Audio play blocked", e));
+                    }
+                    
+                    // AUDIO SWITCH LOGIC: Play Audio 2 ONLY if Last Card is in view
+                    if(entry.target.id === 'last-card' && curtainOpened) {
+                        audio2.play().catch(e => console.log("Audio play blocked", e));
+                    }
+                } 
+                // When a card leaves view
+                else {
                     entry.target.classList.remove('visible');
+                    
+                    // AUDIO SWITCH LOGIC: Pause Audio 1 when scrolling away from Cover Card
+                    if(entry.target.id === 'cover-card' && curtainOpened) {
+                        audio1.pause();
+                    }
+
+                    // AUDIO SWITCH LOGIC: Pause Audio 2 when scrolling up AWAY from Last Card
+                    if(entry.target.id === 'last-card' && curtainOpened) {
+                        audio2.pause();
+                    }
                 }
             });
         }, observerOptions);
