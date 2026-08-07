@@ -93,15 +93,19 @@
             height: 100vh;
             height: 100dvh; 
             width: 100vw;
-            overflow-y: scroll;
+            /* Scroll is hidden initially until candles are blown! */
+            overflow-y: hidden; 
             scroll-snap-type: y mandatory;
             scroll-behavior: smooth;
             scrollbar-width: none; 
         }
         .scroll-container::-webkit-scrollbar { display: none; }
+        
+        /* Class added via JS to unlock scrolling */
+        .scroll-container.unlocked { overflow-y: scroll; }
 
-        /* --- MAGIC ORBS & RAINING HEARTS --- */
-        #magic-container, #hearts-container {
+        /* --- MAGIC ORBS, RAINING EFFECTS & CONFETTI --- */
+        #magic-container, #effects-container {
             position: fixed;
             top: 0;
             left: 0;
@@ -120,7 +124,14 @@
             animation: floatUp linear infinite;
         }
 
-        .rain-heart {
+        @keyframes floatUp {
+            0% { transform: translateY(0) scale(0.5); opacity: 0; }
+            20% { opacity: 1; }
+            80% { opacity: 0.8; }
+            100% { transform: translateY(-110vh) scale(1.2); opacity: 0; }
+        }
+
+        .rain-item {
             position: absolute;
             top: -10%;
             font-size: 1.5rem;
@@ -129,18 +140,25 @@
             filter: drop-shadow(0 2px 5px rgba(0,0,0,0.1));
         }
 
-        @keyframes floatUp {
-            0% { transform: translateY(0) scale(0.5); opacity: 0; }
-            20% { opacity: 1; }
-            80% { opacity: 0.8; }
-            100% { transform: translateY(-110vh) scale(1.2); opacity: 0; }
-        }
-
         @keyframes rainDown {
             0% { transform: translateY(0) rotate(0deg); opacity: 0; }
             10% { opacity: 1; }
             90% { opacity: 1; }
             100% { transform: translateY(110vh) rotate(360deg); opacity: 0; }
+        }
+
+        .confetti {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            border-radius: 2px;
+            z-index: 50;
+            animation: explode 1.5s cubic-bezier(0.1, 0.8, 0.1, 1) forwards;
+        }
+
+        @keyframes explode {
+            0% { transform: translate(0, 0) scale(1); opacity: 1; }
+            100% { transform: translate(var(--tx), var(--ty)) scale(0) rotate(720deg); opacity: 0; }
         }
 
         /* --- PAGE & CARDS --- */
@@ -179,23 +197,31 @@
             opacity: 1;
         }
 
-        /* --- CUTE CSS CAKE --- */
+        /* --- COVER PAGE WITH CUSTOM IMAGE BACKGROUND --- */
         .cover-card {
-            background: rgba(255, 255, 255, 0.5);
+            /* Loads the image with a 70% white overlay so text is readable */
+            background: linear-gradient(rgba(255, 255, 255, 0.7), rgba(255, 255, 255, 0.7)), url('1785853445713.jpeg');
+            background-size: cover;
+            background-position: center;
             border: 2px solid rgba(255, 255, 255, 0.8);
-            box-shadow: 0 15px 50px rgba(216, 27, 96, 0.2);
+            box-shadow: 0 15px 50px rgba(216, 27, 96, 0.4);
             overflow: visible;
         }
 
+        /* --- INTERACTIVE CUTE CAKE --- */
         .custom-cake {
             position: relative;
             width: 140px;
             height: 70px;
             background: #ff8fa3;
             border-radius: 10px;
-            margin: 50px auto 25px auto;
-            box-shadow: inset 0 -10px 0 rgba(0,0,0,0.1);
+            margin: 30px auto 25px auto;
+            box-shadow: inset 0 -10px 0 rgba(0,0,0,0.1), 0 10px 20px rgba(0,0,0,0.2);
+            cursor: pointer; /* Shows it is clickable */
+            transition: transform 0.2s;
         }
+        
+        .custom-cake:active { transform: scale(0.95); }
 
         .frosting {
             position: absolute;
@@ -237,11 +263,26 @@
             border-radius: 50% 50% 20% 20% / 60% 60% 40% 40%;
             box-shadow: 0 0 15px #ff9800, 0 0 30px #ffeb3b;
             animation: flicker 0.4s ease-in-out infinite alternate;
+            transition: opacity 0.3s ease, transform 0.3s ease;
+        }
+
+        /* Class added via JS when blown */
+        .flame.blown {
+            opacity: 0 !important;
+            transform: translateX(-50%) scale(0) !important;
         }
 
         @keyframes flicker {
             0% { transform: translateX(-50%) scale(0.9) rotate(-3deg); opacity: 0.8; box-shadow: 0 0 10px #ff9800, 0 0 20px #ffeb3b;}
             100% { transform: translateX(-50%) scale(1.1) rotate(3deg); opacity: 1; box-shadow: 0 0 20px #ff9800, 0 0 40px #ffeb3b;}
+        }
+
+        #blow-instruction {
+            color: #d81b60;
+            font-weight: 700;
+            font-size: 1.2rem;
+            margin-bottom: 20px;
+            animation: pulseFade 1.5s infinite;
         }
 
         /* --- TYPOGRAPHY & INDICATORS --- */
@@ -300,6 +341,16 @@
             font-weight: 700;
             font-size: 1.1rem;
             animation: pulseFade 2s infinite;
+            
+            /* Hidden until cake is blown */
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 1s ease;
+        }
+
+        .swipe-indicator.show {
+            opacity: 1;
+            pointer-events: all;
         }
 
         .swipe-indicator span { font-size: 2rem; margin-top: 2px; }
@@ -325,14 +376,8 @@
 </head>
 <body>
 
-    <!-- HIDDEN AUDIO PLAYERS -->
-    <!-- Audio 1 plays only on the cover page -->
-    <audio id="audio-1" loop>
-        <source src="song1.mp3" type="audio/mpeg">
-    </audio>
-    
-    <!-- Audio 2 plays only on the last page -->
-    <audio id="audio-2" loop>
+    <!-- ONLY ONE AUDIO TRACK NOW -->
+    <audio id="bg-music" loop>
         <source src="song2.mp3" type="audio/mpeg">
     </audio>
 
@@ -345,15 +390,22 @@
 
     <!-- BACKGROUND EFFECTS -->
     <div id="magic-container"></div>
-    <div id="hearts-container"></div>
+    <div id="effects-container"></div>
 
     <!-- MAIN SCROLL CONTAINER -->
     <div class="scroll-container">
 
-        <!-- COVER PAGE (ADDED ID 'cover-card') -->
+        <!-- COVER PAGE -->
         <section class="page">
             <div class="card cover-card" id="cover-card">
-                <div class="custom-cake">
+                
+                <h1 class="cover-title">Happiest<br>Birthday!!</h1>
+                
+                <!-- Instruction text -->
+                <p id="blow-instruction">Tap the cake to blow the candles! 💨</p>
+
+                <!-- Interactive Cake -->
+                <div class="custom-cake" id="interactive-cake">
                     <div class="frosting"></div>
                     <div class="candles-container">
                         <div class="candle"><div class="flame"></div></div>
@@ -362,11 +414,11 @@
                     </div>
                 </div>
 
-                <h1 class="cover-title">Happiest<br>Birthday!!</h1>
                 <p class="cover-subtitle">Ready for a little trip down memory lane? 😉✨</p>
                 
-                <div class="swipe-indicator">
-                    Swipe Up to Start
+                <!-- Hidden Swipe Indicator -->
+                <div class="swipe-indicator" id="main-swipe-indicator">
+                    Swipe Up for Next Page
                     <span>⏫</span>
                 </div>
             </div>
@@ -380,7 +432,7 @@
                 <p>And the classic, <span class="quote">"Koi racket nhi dera mujhe Silassss!!"</span> 😭😭😭</p>
                 <p>From shouting *"Ek re, dvaara dvaara!"* 🫢 to realizing *"honesty is the best policy"* 😗... we've come so far. Do you know how? Because of that one slap you got! 🥺</p>
                 <p>But I still stand by it—<span class="highlight">glti se hogya tha!</span> 😭🫠 Actually, it was for the best; the real entity was finally revealed! 😗</p>
-                <div class="swipe-indicator" style="font-size: 0.9rem;">Swipe for more <span>⏬</span></div>
+                <div class="swipe-indicator show" style="font-size: 0.9rem;">Swipe for more <span>⏬</span></div>
             </div>
         </section>
 
@@ -390,7 +442,7 @@
                 <h2>Chapter 1 (Part 2) 🏸</h2>
                 <p>It was all about magic moments, racket fights, and slowly... tea fights! 😂 We had zero tiredness and endless enthusiasm for the court.</p>
                 <p><em>Acha, fir aage kya hua? Badminton khtm toh sb khtm? Nhiii toh... aage ye hua! 👇</em></p>
-                <div class="swipe-indicator" style="font-size: 0.9rem;"><span>⏬</span></div>
+                <div class="swipe-indicator show" style="font-size: 0.9rem;"><span>⏬</span></div>
             </div>
         </section>
 
@@ -403,8 +455,8 @@
                 <p>From *"Mai chaii ni peeti"* to literally finishing almost everyone else's chai. <br>
                 <span class="quote">"Hello! Kaha ho? Shanti Nagar. Mai cllg hu... ok coming."</span> 👾</p>
                 <p>Mai 150rs te guzara krn wala... 😂 and now, the budget has definitely upgraded!</p>
-                <p><em>Bs college hi ghumna hai kya? Chlo fir kahin aur ghumte hai.</em> Where? The place where the chole bhature are incredibly lazeez! Still didnt get it? Chlo fir, leke chle... 🚆</p>
-                <div class="swipe-indicator" style="font-size: 0.9rem;"><span>⏬</span></div>
+                <p><em>Bs college hi ghumna hai kya? Chlo fir kahin aur ghumte hai.</em> Where? The place where the chole bhature are incredibly lazeez! Still didn't get it? Chlo fir, leke chle... 🚆</p>
+                <div class="swipe-indicator show" style="font-size: 0.9rem;"><span>⏬</span></div>
             </div>
         </section>
 
@@ -417,7 +469,7 @@
                 <p>Kujh chahiye? THANKS! 🙏 Laser shows are normal, but have you ever seen the one at Qutub Minar? We just clicked photos there, and YOU... black black!! 😂😂</p>
                 <p>Then? Going to see the Taj Mahal and searching for Mumtaaz... not Shah Jahan's, but our own! 😂🤫</p>
                 <p>After falling for the dil wala shehr, we thought, let's just get exported here and become Delhiites... or should I say, Red Tape wale! 😂</p>
-                <div class="swipe-indicator" style="font-size: 0.9rem;"><span>⏬</span></div>
+                <div class="swipe-indicator show" style="font-size: 0.9rem;"><span>⏬</span></div>
             </div>
         </section>
 
@@ -429,7 +481,7 @@
                 <p>But who is he to tell me what I'm gonna do? <span class="highlight">Mai toh aesthetic hu, jo mrji krugi! 😎</span></p>
                 <p>And then what? Our bond just grew stronger!</p>
                 <p>Exploring everything together, and of course, hunting down the absolute BEST Chole Bhature! 😭🫶🏻</p>
-                <div class="swipe-indicator" style="font-size: 0.9rem;"><span>⏬</span></div>
+                <div class="swipe-indicator show" style="font-size: 0.9rem;"><span>⏬</span></div>
             </div>
         </section>
 
@@ -440,7 +492,7 @@
                 <p>From *"Mai nii jnaa.. vo sb honge udr"* to *"Mujhe ghr ni jana!"* 😭😂 That's when we realized... Delhi se uppr kujh ni! 🫶🏻</p>
                 <p>₹150 in Chandni Chowk or ₹2000 in DLF... YES, we can afford both vibes. 😎</p>
                 <p>But what really happened in Delhi? <span class="highlight">Chlne ka imtehaan! 😭</span> Walking less than 15-16 km was impossible. Exploring roads, clothes, metros, drinks, the wonders of the world, and testing our ultimate walking capacity.</p>
-                <div class="swipe-indicator" style="font-size: 0.9rem;"><span>⏬</span></div>
+                <div class="swipe-indicator show" style="font-size: 0.9rem;"><span>⏬</span></div>
             </div>
         </section>
 
@@ -451,7 +503,7 @@
                 <p>Chlo bhai behno ko b mil aate hai 🐒🐊🦧🐅🐘🦜🦚 but walking like pure aesthetics and foreigners so nobody stops us! 😎</p>
                 <p>At first: *"Humayun kujh ni hai?"* Then: *"Yrrrr... ethe ta raje ne AC v lgvaya hai!"* 😂 It has everything, but of course, it's far and I was always exhausted... the one with the low BP, constantly tripping and crying. 🥲</p>
                 <p>What did Delhi give us? The shift from disliking to loving Poha 🤩 and transforming you into a pure Dosa person! 😗 Every place has a specialty, but Delhi isn't just special, it's <strong>dil</strong>. ❤️ We left some things behind and made a habit of others... YKIYK.</p>
-                <div class="swipe-indicator" style="font-size: 0.9rem;"><span>⏬</span></div>
+                <div class="swipe-indicator show" style="font-size: 0.9rem;"><span>⏬</span></div>
             </div>
         </section>
 
@@ -463,13 +515,13 @@
                 <p>Desperately waiting to step in and cut the cake right at 12 AM... and what? <span class="highlight">Mission accomplished! 🎯</span></p>
                 <p>It was one of the best days ever. From navigating metros to hopping on a Rapido, it was a quick transition... and a strong realization that it's Delhi over anywhere else. 😭🫶🏻</p>
                 <p>Still, forever grateful for every single moment we've shared.</p>
-                <div class="swipe-indicator" style="font-size: 0.9rem;"><span>⏬</span></div>
+                <div class="swipe-indicator show" style="font-size: 0.9rem;"><span>⏬</span></div>
             </div>
         </section>
 
-        <!-- CHAPTER 7 (ADDED ID 'last-card' FOR AUDIO TRIGGER) -->
+        <!-- CHAPTER 7 -->
         <section class="page">
-            <div class="card" id="last-card">
+            <div class="card">
                 <h2>Chapter 7: The Unwritten Pages 📖</h2>
                 <p>Let’s see what comes next... new hurdles or pure adrenaline-fueled fun! 🎢</p>
                 <p>Hoping for the best, endless late-night convos, and unforgettable trips.</p>
@@ -483,28 +535,92 @@
     </div>
 
     <script>
-        // --- 0. CURTAIN & AUDIO LOGIC ---
+        // --- 0. CURTAIN LOGIC ---
         const curtainContainer = document.getElementById('curtain-container');
         const openBtn = document.getElementById('open-btn');
-        const audio1 = document.getElementById('audio-1');
-        const audio2 = document.getElementById('audio-2');
-        let curtainOpened = false;
-
+        
         openBtn.addEventListener('click', () => {
             curtainContainer.classList.add('open');
-            curtainOpened = true;
-            
-            // Play first music on click
-            audio1.play().catch(e => console.log("Audio play blocked", e));
-            
-            // Remove curtain from DOM after animation
             setTimeout(() => {
                 curtainContainer.style.display = 'none';
-                startRainingHearts(); 
             }, 1500);
         });
 
-        // --- 1. Glowing Orbs (Fireflies) Animation ---
+        // --- 1. INTERACTIVE CAKE & PARTY LOGIC ---
+        const interactiveCake = document.getElementById('interactive-cake');
+        const flames = document.querySelectorAll('.flame');
+        const blowInstruction = document.getElementById('blow-instruction');
+        const mainSwipeIndicator = document.getElementById('main-swipe-indicator');
+        const scrollContainer = document.querySelector('.scroll-container');
+        const bgMusic = document.getElementById('bg-music');
+        let isBlown = false;
+
+        interactiveCake.addEventListener('click', () => {
+            if(isBlown) return; // Prevent multiple clicks
+            isBlown = true;
+            
+            // 1. Blow out flames visually
+            flames.forEach(flame => flame.classList.add('blown'));
+            blowInstruction.style.display = 'none'; // Hide instruction
+            
+            // 2. Play the music
+            bgMusic.play().catch(e => console.log("Audio play blocked", e));
+            
+            // 3. Trigger Party Poppers (Confetti)
+            fireConfetti();
+            
+            // 4. Start Raining Flowers & Hearts
+            startRainingEffects();
+            
+            // 5. Unlock the page so they can finally scroll down
+            mainSwipeIndicator.classList.add('show');
+            scrollContainer.classList.add('unlocked');
+        });
+
+        // --- 2. PARTY POPPERS (CONFETTI) FUNCTION ---
+        function fireConfetti() {
+            const colors = ['#ff0000', '#ff69b4', '#ffd700', '#00ff00', '#00ffff', '#ff8fa3'];
+            for (let i = 0; i < 80; i++) {
+                const confetti = document.createElement('div');
+                confetti.classList.add('confetti');
+                confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                
+                // Start from the cake
+                confetti.style.left = '50vw';
+                confetti.style.top = '60vh';
+                
+                // Explode outwards
+                const tx = (Math.random() - 0.5) * 300 + 'vw';
+                const ty = (Math.random() - 0.5) * 300 + 'vh';
+                confetti.style.setProperty('--tx', tx);
+                confetti.style.setProperty('--ty', ty);
+                
+                confetti.style.animationDuration = (Math.random() * 1 + 1) + 's';
+                document.body.appendChild(confetti);
+                
+                setTimeout(() => confetti.remove(), 2500);
+            }
+        }
+
+        // --- 3. RAINING FLOWERS & HEARTS FUNCTION ---
+        const effectsContainer = document.getElementById('effects-container');
+        const fallingItems = ['❤️', '💖', '🌸', '🌼', '✨', '💕'];
+        
+        function startRainingEffects() {
+            setInterval(() => {
+                const item = document.createElement('div');
+                item.classList.add('rain-item');
+                item.innerText = fallingItems[Math.floor(Math.random() * fallingItems.length)];
+                item.style.left = Math.random() * 100 + 'vw';
+                item.style.fontSize = (Math.random() * 15 + 15) + 'px';
+                item.style.animationDuration = (Math.random() * 3 + 4) + 's'; 
+                effectsContainer.appendChild(item);
+                
+                setTimeout(() => item.remove(), 8000);
+            }, 300); 
+        }
+
+        // --- 4. GLOWING ORBS (Always active in background) ---
         const magicContainer = document.getElementById('magic-container');
         for (let i = 0; i < 15; i++) {
             const orb = document.createElement('div');
@@ -518,69 +634,21 @@
             magicContainer.appendChild(orb);
         }
 
-        // --- 2. Raining Hearts Animation ---
-        const heartsContainer = document.getElementById('hearts-container');
-        const hearts = ['❤️', '💖', '✨', '🤍', '💕'];
-        
-        function startRainingHearts() {
-            setInterval(() => {
-                const heart = document.createElement('div');
-                heart.classList.add('rain-heart');
-                heart.innerText = hearts[Math.floor(Math.random() * hearts.length)];
-                heart.style.left = Math.random() * 100 + 'vw';
-                heart.style.fontSize = (Math.random() * 15 + 15) + 'px';
-                heart.style.animationDuration = (Math.random() * 3 + 4) + 's'; 
-                heartsContainer.appendChild(heart);
-                
-                setTimeout(() => { heart.remove(); }, 8000);
-            }, 300); 
-        }
-
-        // --- 3. Premium Scroll & Dual Audio Controller (UPDATED LOGIC) ---
+        // --- 5. PREMIUM SCROLL ANIMATION ---
         const cards = document.querySelectorAll('.card');
-        const scrollContainer = document.querySelector('.scroll-container');
-
-        const observerOptions = {
-            root: scrollContainer, 
-            threshold: 0.4 
-        };
+        const observerOptions = { root: scrollContainer, threshold: 0.4 };
 
         const observer = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
-                // When a card comes into view
                 if (entry.isIntersecting) {
                     entry.target.classList.add('visible');
-                    
-                    // AUDIO SWITCH LOGIC: Play Audio 1 ONLY if Cover Card is in view
-                    if(entry.target.id === 'cover-card' && curtainOpened) {
-                        audio1.play().catch(e => console.log("Audio play blocked", e));
-                    }
-                    
-                    // AUDIO SWITCH LOGIC: Play Audio 2 ONLY if Last Card is in view
-                    if(entry.target.id === 'last-card' && curtainOpened) {
-                        audio2.play().catch(e => console.log("Audio play blocked", e));
-                    }
-                } 
-                // When a card leaves view
-                else {
+                } else {
                     entry.target.classList.remove('visible');
-                    
-                    // AUDIO SWITCH LOGIC: Pause Audio 1 when scrolling away from Cover Card
-                    if(entry.target.id === 'cover-card' && curtainOpened) {
-                        audio1.pause();
-                    }
-
-                    // AUDIO SWITCH LOGIC: Pause Audio 2 when scrolling up AWAY from Last Card
-                    if(entry.target.id === 'last-card' && curtainOpened) {
-                        audio2.pause();
-                    }
                 }
             });
         }, observerOptions);
 
-        cards.forEach(card => {
-            observer.observe(card);
-        });
+        cards.forEach(card => observer.observe(card));
     </script>
 </body>
 </html>
